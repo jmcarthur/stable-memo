@@ -1,5 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
-module Data.StableMemo (memo) where
+module Data.StableMemo (memo, memo2, memo3) where
 
 import System.Mem.StableName
 import System.Mem.Weak
@@ -47,3 +47,9 @@ memo f =
         weak' <- mkWeakPtr tbl . Just $ tableFinalizer tbl
         return (tbl', weak')
   in memo' f tbl weak
+
+memo2 :: (a -> b -> c) -> (a -> b -> c)
+memo2 f = memo . memo f
+
+memo3 :: (a -> b -> c -> d) -> (a -> b -> c -> d)
+memo3 f = memo . memo2 f
