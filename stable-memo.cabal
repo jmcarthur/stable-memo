@@ -12,11 +12,20 @@ description:
 
   Whereas most memo combinators memoize based on equality, stable-memo
   does it based on whether the exact same argument has been passed to
-  the function before (that is, is the same argument in memory). The
-  biggest gain over equality-base memoization is that this can be more
-  suitable for recursive functions over graphs with cycles. Another
-  gain is that there is no type class constraint on the function's
-  argument.
+  the function before (that is, is the same argument in memory).
+
+  A big gain over equality-base memoization is that this can be more
+  suitable for recursive functions over graphs with cycles.
+
+  Another big gain that this implementation has is that it doesn't
+  retain the keys it has seen so far, which allows them to be garbage
+  collected if they will no longer be used. Finalizers are put in
+  place to remove the corresponding entries from the memo table if
+  this happens. Furthermore, the *values* are not retained either; if
+  a value is garbage collected, it will just be recomputed.
+
+  Another gain is that there is no type class constraint on the
+  function's argument.
 
   A downside is that this memoization will not work for arguments
   which happen to have the same value but are not the same heap
