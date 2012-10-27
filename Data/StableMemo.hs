@@ -1,5 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
-module Memo (memo) where
+module Data.StableMemo (memo) where
 
 import System.Mem.StableName
 import System.Mem.Weak

@@ -1,0 +1,30 @@
+name:                stable-memo
+version:             0.1.0
+synopsis:            Memoization based on argument identity
+license:             MIT
+license-file:        LICENSE
+author:              Jake McArthur <Jake.McArthur@gmail.com>
+maintainer:          Jake McArthur <Jake.McArthur@gmail.com>
+category:            Data
+build-type:          Simple
+cabal-version:       >=1.16
+description:
+
+  Whereas most memo combinators memoize based on equality, stable-memo
+  does it based on whether the exact same argument has been passed to
+  the function before (that is, is the same argument in memory). The
+  biggest gain over equality-base memoization is that this is suitable
+  for recursive functions over graphs with cycles. Another gain is
+  that there is no type class constraint on the function's argument.
+
+  A downside is that this memoization will not work for arguments
+  which happen to have the same value but are not the same heap
+  object. This rules out many candidates for memoization, such as the
+  most common example for memoization, the naive Fibonacci
+  implementation whose domain is strict Ints; it still works for some
+  domains, though, such as the lazy naturals.
+
+library
+  default-language:    Haskell2010
+  exposed-modules:     Data.StableMemo
+  build-depends:       base >=4.6 && <5, hashtables ==1.0.*
