@@ -1,5 +1,5 @@
 name:                stable-memo
-version:             0.1.1
+version:             0.1.2
 synopsis:            Memoization based on argument identity
 license:             MIT
 license-file:        LICENSE
@@ -92,4 +92,4 @@ source-repository head
 source-repository this
   type:     darcs
   location: http://patch-tag.com/r/jmcarthur/stable-memo
-  tag:      v0.1.1
+  tag:      v0.1.2
