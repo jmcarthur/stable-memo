@@ -24,8 +24,8 @@ memo = Internal.memo (Proxy :: Proxy Strong)
 
 -- | Curried memoization to share partial evaluation
 memo2 :: (a -> b -> c) -> (a -> b -> c)
-memo2 f = memo . memo f
+memo2 f = memo (memo . f)
 
 -- | Curried memoization to share partial evaluation
 memo3 :: (a -> b -> c -> d) -> (a -> b -> c -> d)
-memo3 f = memo . memo2 f
+memo3 f = memo (memo2 . f)
