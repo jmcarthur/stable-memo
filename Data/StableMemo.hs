@@ -43,7 +43,7 @@ memo :: (a -> b) -> (a -> b)
 {-# NOINLINE memo #-}
 memo f =
   let (tbl, weak) = unsafePerformIO $ do
-        tbl <- HashTable.new
-        weak <- mkWeakPtr tbl . Just $ tableFinalizer tbl
-        return (tbl, weak)
+        tbl' <- HashTable.new
+        weak' <- mkWeakPtr tbl . Just $ tableFinalizer tbl
+        return (tbl', weak')
   in memo' f tbl weak
