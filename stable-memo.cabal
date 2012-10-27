@@ -68,3 +68,12 @@ library
   exposed-modules:     Data.StableMemo, Data.StableMemo.Weak
   other-extensions:    BangPatterns
   other-modules:       Data.StableMemo.Internal
+
+source-repository head
+  type:     darcs
+  location: http://patch-tag.com/r/jmcarthur/stable-memo
+
+source-repository this
+  type:     darcs
+  location: http://patch-tag.com/r/jmcarthur/stable-memo
+  tag:      v0.1.0
