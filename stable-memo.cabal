@@ -14,24 +14,46 @@ description:
   does it based on whether the exact same argument has been passed to
   the function before (that is, is the same argument in memory).
 
-  A big gain over equality-base memoization is that this can be more
-  suitable for recursive functions over graphs with cycles.
+  .
 
-  Another big gain that this implementation has is that it doesn't
-  retain the keys it has seen so far, which allows them to be garbage
-  collected if they will no longer be used. Finalizers are put in
-  place to remove the corresponding entries from the memo table if
-  this happens.
+  * This can be more suitable for recursive functions over graphs with
+    cycles.
 
-  Another gain is that there is no type class constraint on the
-  function's argument.
+  .
 
-  A downside is that this memoization will not work for arguments
-  which happen to have the same value but are not the same heap
-  object. This rules out many candidates for memoization, such as the
-  most common example, the naive Fibonacci implementation whose domain
-  is strict Ints; it still works for some domains, though, such as the
-  lazy naturals.
+  * stable-memo doesn't retain the keys it has seen so far, which
+    allows them to be garbage collected if they will no longer be
+    used. Finalizers are put in place to remove the corresponding
+    entries from the memo table if this happens.
+
+  .
+
+  * "Data.StableMemo.Weak" provides an alternative set of combinators
+    that also avoid retaining the results of the function, only
+    reusing results if they have not yet been garbage collected.
+
+  .
+
+  * There is no type class constraint on the function's argument.
+
+  .
+
+  stable-memo will not work for arguments which happen to have the
+  same value but are not the same heap object. This rules out many
+  candidates for memoization, such as the most common example, the
+  naive Fibonacci implementation whose domain is strict Ints; it can
+  still be made to work for some domains, though, such as the lazy
+  naturals.
+
+  .
+
+  > data Nat = Succ Nat | Zero
+  >
+  > fib :: Nat -> Integer
+  > fib = memo fib'
+  >   where fib' Zero                = 0
+  >         fib' (Succ Zero)         = 1
+  >         fib' (Succ n1@(Succ n2)) = fib n1 + fib n2
 
 library
   build-depends:       base >=4.6 && <5, hashtables ==1.0.*, tagged ==0.4.*
