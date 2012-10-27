@@ -55,6 +55,13 @@ description:
   >         fib' (Succ Zero)         = 1
   >         fib' (Succ n1@(Succ n2)) = fib n1 + fib n2
 
+  .
+
+  This implementation is largely based on the one found in
+  \"Stretching the storage manager: weak pointers and stable names in
+  Haskell\", from Simon Peyton Jones, Simon Marlow, and Conal Elliott
+  (<http://community.haskell.org/~simonmar/papers/weak.pdf>).
+
 library
   build-depends:       base >=4.6 && <5, hashtables ==1.0.*, tagged ==0.4.*
   default-language:    Haskell2010
