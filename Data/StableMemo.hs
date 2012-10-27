@@ -1,52 +1,25 @@
 {-# LANGUAGE BangPatterns #-}
 module Data.StableMemo (memo, memo2, memo3) where
 
-import System.Mem.StableName
-import System.Mem.Weak
+import Data.Proxy
 
-import Data.HashTable.IO (BasicHashTable)
-import System.IO.Unsafe (unsafePerformIO)
+import System.Mem.Weak (Weak)
 
-import qualified Data.HashTable.IO as HashTable
+import qualified Data.StableMemo.Internal as Internal
+import qualified System.Mem.Weak as Weak
 
-type SNMap a b = BasicHashTable (StableName a) b
-type MemoTable a b = SNMap a (Weak b)
+data Strong a = Strong a !(Weak a)
 
-finalizer :: StableName a -> Weak (MemoTable a b) -> IO ()
-finalizer sn weakTbl = do
-  r <- deRefWeak weakTbl
-  case r of
-    Nothing -> return ()
-    Just tbl -> HashTable.delete tbl sn
-
-memo' :: (a -> b) -> MemoTable a b -> Weak (MemoTable a b) -> (a -> b)
-memo' f tbl weakTbl !x = unsafePerformIO $ do
-  sn <- makeStableName x
-  lkp <- HashTable.lookup tbl sn
-  case lkp of
-    Nothing -> notFound sn
-    Just w -> do
-      maybeVal <- deRefWeak w
-      case maybeVal of
-        Nothing -> notFound sn
-        Just val -> return val
-  where notFound sn = do
-          let y = f x
-          weak <- mkWeak x y . Just $ finalizer sn weakTbl
-          HashTable.insert tbl sn weak
-          return y
-
-tableFinalizer :: MemoTable a b -> IO ()
-tableFinalizer = HashTable.mapM_ $ finalize . snd
+instance Internal.Ref Strong where
+  mkRef _ y final = do
+    weak <- Weak.mkWeakPtr y $ Just final
+    return $ Strong y weak
+  deRef (Strong x _) = return $ Just x
+  finalize (Strong _ weak) = Weak.finalize weak
 
 memo :: (a -> b) -> (a -> b)
 {-# NOINLINE memo #-}
-memo f =
-  let (tbl, weak) = unsafePerformIO $ do
-        tbl' <- HashTable.new
-        weak' <- mkWeakPtr tbl . Just $ tableFinalizer tbl
-        return (tbl', weak')
-  in memo' f tbl weak
+memo = Internal.memo (Proxy :: Proxy Strong)
 
 memo2 :: (a -> b -> c) -> (a -> b -> c)
 memo2 f = memo . memo f
