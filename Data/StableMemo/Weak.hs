@@ -23,7 +23,8 @@ import qualified Data.StableMemo.Internal as Internal
 
 import Data.StableMemo.Internal ((-->) ())
 
--- | Memoize a function with support for polymorphic recursion.
+-- | Memoize a function with support for a certain form of polymorphic
+-- recursion.
 memoPoly :: (f --> g) -> (f --> g)
 {-# NOINLINE memoPoly #-}
 memoPoly = Internal.memo (Proxy :: Proxy Weak)
