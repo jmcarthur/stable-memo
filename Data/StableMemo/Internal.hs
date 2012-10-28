@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE KindSignatures #-}
-module Data.StableMemo.Internal (Ref (..), memo) where
+module Data.StableMemo.Internal (Ref (..), Strong (..), memo) where
 
 import Data.Proxy
 import System.Mem.StableName
@@ -24,6 +24,15 @@ instance Ref Weak where
   mkRef x y = Weak.mkWeak x y . Just
   deRef = Weak.deRefWeak
   finalize = Weak.finalize
+
+data Strong a = Strong a !(Weak a)
+
+instance Ref Strong where
+  mkRef _ y final = do
+    weak <- Weak.mkWeakPtr y $ Just final
+    return $ Strong y weak
+  deRef (Strong x _) = return $ Just x
+  finalize (Strong _ weak) = Weak.finalize weak
 
 finalizer :: StableName a -> Weak (MemoTable ref a b) -> IO ()
 finalizer sn weakTbl = do

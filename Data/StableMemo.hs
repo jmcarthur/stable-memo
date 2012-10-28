@@ -3,24 +3,12 @@ module Data.StableMemo (memo, memo2, memo3) where
 
 import Data.Proxy
 
-import System.Mem.Weak (Weak)
-
 import qualified Data.StableMemo.Internal as Internal
-import qualified System.Mem.Weak as Weak
-
-data Strong a = Strong a !(Weak a)
-
-instance Internal.Ref Strong where
-  mkRef _ y final = do
-    weak <- Weak.mkWeakPtr y $ Just final
-    return $ Strong y weak
-  deRef (Strong x _) = return $ Just x
-  finalize (Strong _ weak) = Weak.finalize weak
 
 -- | Memoize a unary function.
 memo :: (a -> b) -> (a -> b)
 {-# NOINLINE memo #-}
-memo = Internal.memo (Proxy :: Proxy Strong)
+memo = Internal.memo (Proxy :: Proxy Internal.Strong)
 
 -- | Curried memoization to share partial evaluation
 memo2 :: (a -> b -> c) -> (a -> b -> c)
