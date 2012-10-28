@@ -79,10 +79,16 @@ description:
   (<http://community.haskell.org/~simonmar/papers/weak.pdf>).
 
 library
-  build-depends:       base >=4.6 && <5, hashtables ==1.0.*, tagged ==0.4.*
+  build-depends:       base >=4.6 && <5,
+                       hashtables ==1.0.*,
+                       tagged ==0.4.*,
+                       ghc-prim >=0.3 && < 0.4
   default-language:    Haskell2010
   exposed-modules:     Data.StableMemo, Data.StableMemo.Weak
-  other-extensions:    BangPatterns
+  other-extensions:    BangPatterns,
+                       KindSignatures,
+                       Rank2Types,
+                       TypeOperators
   other-modules:       Data.StableMemo.Internal
 
 source-repository head

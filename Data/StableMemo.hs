@@ -1,14 +1,23 @@
 {-# LANGUAGE BangPatterns #-}
-module Data.StableMemo (memo, memo2, memo3) where
+{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE TypeOperators #-}
+module Data.StableMemo (memo, memo2, memo3, (-->) (), memoPoly) where
 
+import Control.Applicative
 import Data.Proxy
 
 import qualified Data.StableMemo.Internal as Internal
 
+import Data.StableMemo.Internal ((-->) ())
+
+-- | Memoize a function with support for polymorphic recursion.
+memoPoly :: (f --> g) -> (f --> g)
+{-# NOINLINE memoPoly #-}
+memoPoly = Internal.memo (Proxy :: Proxy Internal.Strong)
+
 -- | Memoize a unary function.
 memo :: (a -> b) -> (a -> b)
-{-# NOINLINE memo #-}
-memo = Internal.memo (Proxy :: Proxy Internal.Strong)
+memo f = getConst . memoPoly (Const . f . getConst) . Const
 
 -- | Curried memoization to share partial evaluation
 memo2 :: (a -> b -> c) -> (a -> b -> c)

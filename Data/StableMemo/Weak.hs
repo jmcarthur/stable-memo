@@ -10,18 +10,27 @@ be reused, otherwise it will be recomputed.
 -}
 
 {-# LANGUAGE BangPatterns #-}
-module Data.StableMemo.Weak (memo, memo2, memo3) where
+{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE TypeOperators #-}
+module Data.StableMemo.Weak (memo, memo2, memo3, (-->) (), memoPoly) where
 
+import Control.Applicative
 import Data.Proxy
 
 import System.Mem.Weak (Weak)
 
 import qualified Data.StableMemo.Internal as Internal
 
+import Data.StableMemo.Internal ((-->) ())
+
+-- | Memoize a function with support for polymorphic recursion.
+memoPoly :: (f --> g) -> (f --> g)
+{-# NOINLINE memoPoly #-}
+memoPoly = Internal.memo (Proxy :: Proxy Weak)
+
 -- | Memoize a unary function.
 memo :: (a -> b) -> (a -> b)
-{-# NOINLINE memo #-}
-memo = Internal.memo (Proxy :: Proxy Weak)
+memo f = getConst . memoPoly (Const . f . getConst) . Const
 
 -- | Curried memoization to share partial evaluation
 memo2 :: (a -> b -> c) -> (a -> b -> c)

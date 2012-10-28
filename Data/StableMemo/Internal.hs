@@ -1,19 +1,28 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE KindSignatures #-}
-module Data.StableMemo.Internal (Ref (..), Strong (..), memo) where
+{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE TypeOperators #-}
+module Data.StableMemo.Internal (Ref (..), Strong (..), (-->) (), memo) where
 
 import Data.Proxy
 import System.Mem.StableName
 
 import Data.HashTable.IO (BasicHashTable)
+import GHC.Prim (Any)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Mem.Weak (Weak)
+import Unsafe.Coerce (unsafeCoerce)
 
 import qualified Data.HashTable.IO as HashTable
 import qualified System.Mem.Weak as Weak
 
-type SNMap a b = BasicHashTable (StableName a) b
-type MemoTable ref a b = SNMap a (ref b)
+newtype (f <<< g) a = O { unO :: f (g a) }
+
+-- Invariant: The type parameters for a key and its corresponding
+-- value are the same.
+type SNMap f g = BasicHashTable (StableName (f Any)) (g Any)
+
+type MemoTable ref f g = SNMap f (ref <<< g)
 
 class Ref ref where
   mkRef    :: a -> b -> IO () -> IO (ref b)
@@ -34,34 +43,45 @@ instance Ref Strong where
   deRef (Strong x _) = return $ Just x
   finalize (Strong _ weak) = Weak.finalize weak
 
-finalizer :: StableName a -> Weak (MemoTable ref a b) -> IO ()
+finalizer :: StableName (f Any) -> Weak (MemoTable ref f g) -> IO ()
 finalizer sn weakTbl = do
   r <- Weak.deRefWeak weakTbl
   case r of
     Nothing -> return ()
     Just tbl -> HashTable.delete tbl sn
 
-memo' :: Ref ref => Proxy ref -> (a -> b) -> MemoTable ref a b -> Weak (MemoTable ref a b) -> (a -> b)
+unsafeToAny :: f a -> f Any
+unsafeToAny = unsafeCoerce
+
+unsafeFromAny :: f Any -> f a
+unsafeFromAny = unsafeCoerce
+
+-- | Polymorphic memoizable function
+type f --> g = forall a. f a -> g a
+
+memo' :: Ref ref =>
+         Proxy ref -> (f --> g) -> MemoTable ref f g ->
+         Weak (MemoTable ref f g) -> (f --> g)
 memo' _ f tbl weakTbl !x = unsafePerformIO $ do
-  sn <- makeStableName x
+  sn <- makeStableName $ unsafeToAny x
   lkp <- HashTable.lookup tbl sn
   case lkp of
     Nothing -> notFound sn
-    Just w -> do
+    Just (O w) -> do
       maybeVal <- deRef w
       case maybeVal of
         Nothing -> notFound sn
-        Just val -> return val
+        Just val -> return $ unsafeFromAny val
   where notFound sn = do
           let y = f x
-          weak <- mkRef x y $ finalizer sn weakTbl
-          HashTable.insert tbl sn weak
+          weak <- mkRef x (unsafeToAny y) $ finalizer sn weakTbl
+          HashTable.insert tbl sn $ O weak
           return y
 
-tableFinalizer :: Ref ref => MemoTable ref a b -> IO ()
-tableFinalizer = HashTable.mapM_ $ finalize . snd
+tableFinalizer :: Ref ref => MemoTable ref f g -> IO ()
+tableFinalizer = HashTable.mapM_ $ finalize . unO . snd
 
-memo :: Ref ref => Proxy (ref :: * -> *) -> (a -> b) -> (a -> b)
+memo :: Ref ref => Proxy (ref :: * -> *) -> (f --> g) -> (f --> g)
 memo p f =
   let (tbl, weak) = unsafePerformIO $ do
         tbl' <- HashTable.new
