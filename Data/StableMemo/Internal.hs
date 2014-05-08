@@ -1,5 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE Trustworthy #-}
 {-# LANGUAGE TypeOperators #-}
