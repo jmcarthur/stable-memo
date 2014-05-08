@@ -42,28 +42,9 @@ description:
 
   .
 
-  stable-memo will not work for arguments which happen to have the
-  same value but are not the same heap object. This rules out many
-  candidates for memoization, such as the most common example, the
-  naive Fibonacci implementation whose domain is machine Ints; it can
-  still be made to work for some domains, though, such as the lazy
-  naturals.
-
-  .
-
-  > data Nat = Succ Nat | Zero
-  >
-  > fib :: Nat -> Integer
-  > fib = memo fib'
-  >   where fib' Zero                = 0
-  >         fib' (Succ Zero)         = 1
-  >         fib' (Succ n1@(Succ n2)) = fib n1 + fib n2
-
-  .
-
-  Below is an implementation of map that preserves sharing of the
-  spine for cyclic lists. It should even be safe to use this on
-  arbitrarily long, acyclic lists since as long as the garbage
+  For motivation, here is an implementation of map that preserves
+  sharing of the spine for cyclic lists. It should even be safe to use
+  this on arbitrarily long, acyclic lists since as long as the garbage
   collector is chasing you, the size of the memo table should stay
   under control, too.
 
