@@ -11,6 +11,7 @@ be reused, otherwise it will be recomputed.
 
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE Safe #-}
 {-# LANGUAGE TypeOperators #-}
 module Data.StableMemo.Weak (memo, memo2, memo3, (-->) (), memoPoly) where
 

@@ -1,5 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE Safe #-}
 {-# LANGUAGE TypeOperators #-}
 module Data.StableMemo (memo, memo2, memo3, (-->) (), memoPoly) where
 
