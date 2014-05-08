@@ -71,8 +71,10 @@ library
   default-language:    Haskell2010
   exposed-modules:     Data.StableMemo, Data.StableMemo.Weak
   other-extensions:    BangPatterns,
-                       KindSignatures,
-                       Rank2Types,
+                       RankNTypes,
+                       PolyKinds,
+                       Safe,
+                       Trustworthy,
                        TypeOperators
   other-modules:       Data.StableMemo.Internal
 

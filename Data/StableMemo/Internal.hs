@@ -1,7 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE Trustworthy #-}
 {-# LANGUAGE TypeOperators #-}
 module Data.StableMemo.Internal (Ref (..), Strong (..), (-->) (), memo) where
