@@ -47,6 +47,9 @@
 \.setup-config
 # standard cabal build dir, might not be boring for everybody
 ^dist(/|$)
+# cabal sandbox
+^\.cabal-sandbox$
+^cabal.sandbox.config$
 # autotools
 (^|/)autom4te\.cache($|/)
 (^|/)config\.(log|status)$
