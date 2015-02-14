@@ -80,9 +80,9 @@ library
 
 source-repository head
   type:     darcs
-  location: http://patch-tag.com/r/jmcarthur/stable-memo
+  location: http://hub.darcs.net/jmcarthur/stable-memo
 
 source-repository this
   type:     darcs
   location: http://patch-tag.com/r/jmcarthur/stable-memo
-  tag:      v0.2.4
+  tag:      v0.3.0
