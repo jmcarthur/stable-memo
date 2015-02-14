@@ -3,7 +3,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE Trustworthy #-}
 {-# LANGUAGE TypeOperators #-}
-module Data.StableMemo.Internal (Ref (..), Strong (..), (-->) (), memo) where
+module Data.StableMemo.Internal (Ref (..), Strong (..), memo) where
 
 import Data.Proxy
 import System.Mem.StableName
@@ -57,12 +57,9 @@ unsafeToAny = unsafeCoerce
 unsafeFromAny :: f Any -> f a
 unsafeFromAny = unsafeCoerce
 
--- | Polymorphic memoizable function
-type f --> g = forall a. f a -> g a
-
 memo' :: Ref ref =>
-         Proxy ref -> (f --> g) -> MemoTable ref f g ->
-         Weak (MemoTable ref f g) -> (f --> g)
+         Proxy ref -> (forall a. f a -> g a) -> MemoTable ref f g ->
+         Weak (MemoTable ref f g) -> f b -> g b
 memo' _ f tbl weakTbl !x = unsafePerformIO $ do
   sn <- makeStableName $ unsafeToAny x
   lkp <- HashTable.lookup tbl sn
@@ -82,7 +79,7 @@ memo' _ f tbl weakTbl !x = unsafePerformIO $ do
 tableFinalizer :: Ref ref => MemoTable ref f g -> IO ()
 tableFinalizer = HashTable.mapM_ $ finalize . unO . snd
 
-memo :: Ref ref => Proxy (ref :: * -> *) -> (f --> g) -> (f --> g)
+memo :: Ref ref => Proxy (ref :: * -> *) -> (forall a. f a -> g a) -> f b -> g b
 memo p f =
   let (tbl, weak) = unsafePerformIO $ do
         tbl' <- HashTable.new

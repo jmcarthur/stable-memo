@@ -20,7 +20,7 @@ around for a long time. If the result for an input has already
 been computed and happens to still be in the heap, it will be
 reused, otherwise it will be recomputed.
 -}
-module Data.StableMemo.Weak (memo, memo2, memo3, (-->) (), memoPoly) where
+module Data.StableMemo.Weak (memo, memo2, memo3, memoPoly) where
 
 import Control.Applicative
 import Data.Proxy
@@ -29,11 +29,9 @@ import System.Mem.Weak (Weak)
 
 import qualified Data.StableMemo.Internal as Internal
 
-import Data.StableMemo.Internal ((-->) ())
-
 -- | Memoize a function with support for a certain form of polymorphic
 -- recursion.
-memoPoly :: (f --> g) -> (f --> g)
+memoPoly :: (forall a. f a -> g a) -> f b -> g b
 {-# NOINLINE memoPoly #-}
 memoPoly = Internal.memo (Proxy :: Proxy Weak)
 
