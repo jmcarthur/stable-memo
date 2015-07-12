@@ -49,6 +49,7 @@
 ^dist(/|$)
 # cabal sandbox
 ^\.cabal-sandbox$
+^\.stack-work$
 ^cabal.sandbox.config$
 # autotools
 (^|/)autom4te\.cache($|/)
