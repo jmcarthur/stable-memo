@@ -7,7 +7,7 @@ author:              Jake McArthur <Jake.McArthur@gmail.com>
 maintainer:          Jake McArthur <Jake.McArthur@gmail.com>
 category:            Data
 build-type:          Simple
-cabal-version:       >=1.18
+cabal-version:       1.18
 tested-with:         GHC ==7.6.3,
                      GHC ==7.8.4,
                      GHC ==7.10.3,
