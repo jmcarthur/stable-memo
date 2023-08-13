@@ -5,6 +5,8 @@ license:             MIT
 license-file:        LICENSE
 author:              Jake McArthur <Jake.McArthur@gmail.com>
 maintainer:          Jake McArthur <Jake.McArthur@gmail.com>
+homepage:            https://github.com/jmcarthur/stable-memo
+bug-reports:         https://github.com/jmcarthur/stable-memo/issues
 category:            Data
 build-type:          Simple
 cabal-version:       1.18
@@ -93,10 +95,10 @@ library
   other-modules:       Data.StableMemo.Internal
 
 source-repository head
-  type:     darcs
-  location: http://hub.darcs.net/jmcarthur/stable-memo
+  type:     git
+  location: https://github.com/jmcarthur/stable-memo.git
 
 source-repository this
-  type:     darcs
-  location: http://patch-tag.com/r/jmcarthur/stable-memo
-  tag:      v0.3.1
+  type:     git
+  location: https://github.com/jmcarthur/stable-memo.git
+  tag:      v0.4.0
