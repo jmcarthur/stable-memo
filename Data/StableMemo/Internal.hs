@@ -1,21 +1,25 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE Trustworthy #-}
 {-# LANGUAGE TypeOperators #-}
 module Data.StableMemo.Internal (Ref (..), Strong (..), memo) where
 
-import Data.Proxy
-import System.Mem.StableName
-
 import Data.HashTable.IO (BasicHashTable)
-import GHC.Types (Any)
+import qualified Data.HashTable.IO as HashTable
+import Data.Proxy
 import System.IO.Unsafe (unsafePerformIO)
+import System.Mem.StableName
 import System.Mem.Weak (Weak)
+import qualified System.Mem.Weak as Weak
 import Unsafe.Coerce (unsafeCoerce)
 
-import qualified Data.HashTable.IO as HashTable
-import qualified System.Mem.Weak as Weak
+#if MIN_VERSION_base(4,10,0)
+import GHC.Types (Any)
+#else
+import GHC.Prim (Any)
+#endif
 
 newtype (f <<< g) a = O { unO :: f (g a) }
 
