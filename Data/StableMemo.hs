@@ -60,22 +60,24 @@ lazy naturals.
 >         map' (x:xs) = f x : go xs
 -}
 
-module Data.StableMemo (memo, memo2, memo3, memoPoly) where
+module Data.StableMemo (memo, memo2, memo3) where
 
 import Control.Applicative
 import Data.Proxy
 
 import qualified Data.StableMemo.Internal as Internal
 
--- | Memoize a function with support for a certain form of polymorphic
--- recursion.
-memoPoly :: (forall a. f a -> g a) -> f b -> g b
-{-# NOINLINE memoPoly #-}
-memoPoly = Internal.memo (Proxy :: Proxy Internal.Strong)
+-- This is commented out because I now believe it is not safe
+--
+-- -- | Memoize a function with support for a certain form of polymorphic
+-- -- recursion.
+-- memoPoly :: (forall a. f a -> g a) -> f b -> g b
+-- {-# NOINLINE memoPoly #-}
+-- memoPoly = Internal.memo (Proxy :: Proxy Internal.Strong)
 
 -- | Memoize a unary function.
 memo :: (a -> b) -> (a -> b)
-memo f = getConst . memoPoly (Const . f . getConst) . Const
+memo f = getConst . Internal.memo (Proxy :: Proxy Internal.Strong) (Const . f . getConst) . Const
 
 -- | Curried memoization to share partial evaluation
 memo2 :: (a -> b -> c) -> (a -> b -> c)

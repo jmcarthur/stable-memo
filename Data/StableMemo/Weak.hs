@@ -20,7 +20,7 @@ around for a long time. If the result for an input has already
 been computed and happens to still be in the heap, it will be
 reused, otherwise it will be recomputed.
 -}
-module Data.StableMemo.Weak (memo, memo2, memo3, memoPoly) where
+module Data.StableMemo.Weak (memo, memo2, memo3) where
 
 import Control.Applicative
 import Data.Proxy
@@ -29,15 +29,17 @@ import System.Mem.Weak (Weak)
 
 import qualified Data.StableMemo.Internal as Internal
 
--- | Memoize a function with support for a certain form of polymorphic
--- recursion.
-memoPoly :: (forall a. f a -> g a) -> f b -> g b
-{-# NOINLINE memoPoly #-}
-memoPoly = Internal.memo (Proxy :: Proxy Weak)
+-- This is commented out because I now believe it is not safe
+--
+-- -- | Memoize a function with support for a certain form of polymorphic
+-- -- recursion.
+-- memoPoly :: (forall a. f a -> g a) -> f b -> g b
+-- {-# NOINLINE memoPoly #-}
+-- memoPoly = Internal.memo (Proxy :: Proxy Weak)
 
 -- | Memoize a unary function.
 memo :: (a -> b) -> (a -> b)
-memo f = getConst . memoPoly (Const . f . getConst) . Const
+memo f = getConst . Internal.memo (Proxy :: Proxy Weak) (Const . f . getConst) . Const
 
 -- | Curried memoization to share partial evaluation
 memo2 :: (a -> b -> c) -> (a -> b -> c)
