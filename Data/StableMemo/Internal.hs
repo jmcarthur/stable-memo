@@ -9,7 +9,7 @@ import Data.Proxy
 import System.Mem.StableName
 
 import Data.HashTable.IO (BasicHashTable)
-import GHC.Prim (Any)
+import GHC.Types (Any)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Mem.Weak (Weak)
 import Unsafe.Coerce (unsafeCoerce)

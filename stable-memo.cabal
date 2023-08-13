@@ -64,9 +64,9 @@ description:
   (<http://community.haskell.org/~simonmar/papers/weak.pdf>).
 
 library
-  build-depends:       base >=4.6 && <5,
-                       hashtables >=1.0 && <1.3,
-                       ghc-prim >=0.3 && < 0.5
+  build-depends:       base >=4.6 && <4.18,
+                       hashtables >=1.0 && <1.4,
+                       ghc-prim >=0.3 && < 0.11
   default-language:    Haskell2010
   exposed-modules:     Data.StableMemo, Data.StableMemo.Weak
   other-extensions:    BangPatterns,
